@@ -71,8 +71,9 @@ stage('Approval satge: Switch or Abort') {
           } else {
             echo " Aborted - Keeping BLUE and deleting GREEN deployment..."
             sh '''
-              kubectl delete deployment nginx-deployment-green -n default --ignore-not-found
-              echo "Reverted to BLUE deployment."
+              kubectl get deploy -n default
+              kubectl delete deployment nginx-deployment-green -n default --ignore-not-found=true
+              echo "Green deployment deleted successfully."
             '''
           }
         }
