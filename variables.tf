@@ -1,6 +1,6 @@
 variable "project_id" {
     type = string
-    default = "cts07-devadin" 
+    default = "" 
 }
 variable "zone" {
     type = string   
