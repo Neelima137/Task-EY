@@ -2,7 +2,7 @@ pipeline {
   agent any
 
   environment {
-    PROJECT_ID = 'project-id'
+    PROJECT_ID = 'cts07-devadin'
     CLUSTER_NAME = 'ey-test-cluster'
     CLUSTER_ZONE = 'us-central1-a' 
   }
