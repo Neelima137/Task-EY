@@ -1,29 +1,62 @@
 pipeline {
   agent any
+
   environment {
-    KUBECONFIG = credentials('gke-kubeconfig')
+    GOOGLE_APPLICATION_CREDENTIALS = credentials('gcp-serviceaccount-key')
+    PROJECT_ID = 'project-id'
+    CLUSTER_NAME = 'ey-test-cluster'
+    CLUSTER_ZONE = 'us-central1-a' 
   }
+
   stages {
-    stage('Clone Repo') {
+    stage('Clone Repository') {
       steps {
-        git 'https://github.com//gke-bluegreen-demo.git'
+        git 'https://github.com/Neelima137/Task-EY.git'
       }
     }
-    stage('Deploy Blue Version') {
+
+    stage('Authenticate to GKE') {
       steps {
-        sh 'kubectl apply -f k8s/deployment-blue.yaml'
+        sh '''
+          echo "Authenticating to GCP..."
+          gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+          gcloud config set project $PROJECT_ID
+          gcloud container clusters get-credentials $CLUSTER_NAME --zone $CLUSTER_ZONE --project $PROJECT_ID
+        '''
       }
     }
-    stage('Switch Traffic') {
+
+    stage('Deploy Blue (Current Version)') {
       steps {
-        sh 'kubectl apply -f k8s/service-blue.yaml'
+        sh 'echo "Deploying BLUE version..."'
+        sh 'kubectl apply -f k8s/deployment-nginx-1.28.0.yaml'
+        sh 'kubectl apply -f k8s/common-service.yaml'
       }
     }
-    stage('Deploy Green Version') {
+
+    stage('Deploy Green (New Version)') {
       steps {
-        input message: "Deploy green version?"
-        sh 'kubectl apply -f k8s/deployment-green.yaml'
-        sh 'kubectl apply -f k8s/service-green.yaml'
+        sh 'echo "Deploying GREEN version..."'
+        sh 'kubectl apply -f k8s/deployment-nginx-1.29.3.yaml'
+        sh 'echo "Testing GREEN deployment..."'
+        sh 'kubectl get pods -l version=green'
+      }
+    }
+
+    stage('Switch Traffic to Green') {
+      steps {
+        input message: "Switch traffic to GREEN?"
+        sh '''
+          echo "Switching Service selector to GREEN..."
+          kubectl patch service nginx-service -p '{"spec":{"selector":{"version":"green"}}}'
+        '''
+      }
+    }
+
+    stage('Clean Up Old Blue Pods') {
+      steps {
+        sh 'echo "Deleting old BLUE deployment..."'
+        sh 'kubectl delete deployment nginx-blue || true'
       }
     }
   }
