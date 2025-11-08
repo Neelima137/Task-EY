@@ -16,18 +16,15 @@ pipeline {
   stage('Setup GKE Tools') {
     steps {
         sh '''
-            echo "Installing kubectl and gke-gcloud-auth-plugin..."
+         # Install kubectl 
+            echo "Installing kubectl ..."
+            gcloud components install kubectl
+            kubectl version --client
 
-            # Install kubectl (latest stable)
-            curl -LO "https://dl.k8s.io/release/$(curl -sL https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-            chmod +x kubectl
-            mv kubectl /usr/local/bin/ 2>/dev/null || export PATH=$PATH:$(pwd)
-
-            # Install gke-gcloud-auth-plugin via gcloud (guaranteed compatible)
+            # Install gke-gcloud-auth-plugin 
             echo "Installing static GKE gcloud auth plugin..."
-            curl -sLo gke-gcloud-auth-plugin https://github.com/GoogleCloudPlatform/cloud-sdk-go/releases/download/v0.1.0/gke-gcloud-auth-plugin_linux_x86_64
-            chmod +x gke-gcloud-auth-plugin
-            mv gke-gcloud-auth-plugin /usr/local/bin/ 2>/dev/null || export PATH=$PATH:$(pwd)
+            apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
+            gke-gcloud-auth-plugin --version
 
             echo "Installation complete"
             kubectl version --client
