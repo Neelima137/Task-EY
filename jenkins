@@ -79,24 +79,25 @@ stage('Approval satge: Switch or Abort') {
       }
     }
   }
+}
 
 
 //    stage('Switch Traffic to Green') {
-      steps {
-        input message: "Switch traffic to GREEN?"
-        sh '''
-          echo "Switching Service selector to GREEN..."
-          kubectl patch service nginx-service -n default -p '{"spec":{"selector":{"app":"nginx","version":"green"}}}'
-        '''  
-      }
-    }
+//      steps {
+ //       input message: "Switch traffic to GREEN?"
+   //     sh '''
+   //       echo "Switching Service selector to GREEN..."
+   //       kubectl patch service nginx-service -n default -p '{"spec":{"selector":{"app":"nginx","version":"green"}}}'
+    //    '''  
+    //  }
+   // }
 
-    stage('Clean Up Old Blue Pods') {
-      steps {
-        sh 'echo "Deleting old BLUE deployment..."'
-        sh 'kubectl delete deployment nginx-deployment-blue -n default t --ignore-not-found'
-      }
-    }
-  }
-}
-//
+    //stage('Clean Up Old Blue Pods') {
+    //  steps {
+     //   sh 'echo "Deleting old BLUE deployment..."'
+    //    sh 'kubectl delete deployment nginx-deployment-blue -n default t --ignore-not-found'
+    //  }
+   // }
+ // }
+//}
+
