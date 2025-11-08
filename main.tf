@@ -26,7 +26,7 @@ resource "google_container_cluster" "cluster" {
 
 resource "google_container_node_pool" "nodes" {
   name       = "primary-node-pool"
-  location   = var.region
+  location   = var.zone
   cluster    = google_container_cluster.cluster.name
   depends_on = [ google_container_cluster.cluster ]
   node_count = 2
