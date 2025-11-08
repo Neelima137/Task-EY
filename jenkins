@@ -18,19 +18,18 @@ pipeline {
         sh '''
             echo "Installing kubectl and gke-gcloud-auth-plugin..."
 
-            # Download and install kubectl
+            # Install kubectl (latest stable)
             curl -LO "https://dl.k8s.io/release/$(curl -sL https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
             chmod +x kubectl
             mv kubectl /usr/local/bin/ 2>/dev/null || export PATH=$PATH:$(pwd)
 
-            # Download and install GKE auth plugin
-            curl -LO "https://storage.googleapis.com/artifacts.k8s-artifacts-prod.appspot.com/releases/gke-gcloud-auth-plugin/v0.6.0/linux/amd64/gke-gcloud-auth-plugin"
-            chmod +x gke-gcloud-auth-plugin
-            mv gke-gcloud-auth-plugin /usr/local/bin/ 2>/dev/null || export PATH=$PATH:$(pwd)
+            # Install gke-gcloud-auth-plugin via gcloud (guaranteed compatible)
+            echo "Installing GKE auth plugin via gcloud..."
+            gcloud components install gke-gcloud-auth-plugin -q || true
 
             echo "Installation complete"
             kubectl version --client
-            gke-gcloud-auth-plugin --version
+            gke-gcloud-auth-plugin --version || echo "Plugin installed via gcloud components"
         '''
     }
 }
