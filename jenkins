@@ -1,0 +1,30 @@
+pipeline {
+  agent any
+  environment {
+    KUBECONFIG = credentials('gke-kubeconfig')
+  }
+  stages {
+    stage('Clone Repo') {
+      steps {
+        git 'https://github.com//gke-bluegreen-demo.git'
+      }
+    }
+    stage('Deploy Blue Version') {
+      steps {
+        sh 'kubectl apply -f k8s/deployment-blue.yaml'
+      }
+    }
+    stage('Switch Traffic') {
+      steps {
+        sh 'kubectl apply -f k8s/service-blue.yaml'
+      }
+    }
+    stage('Deploy Green Version') {
+      steps {
+        input message: "Deploy green version?"
+        sh 'kubectl apply -f k8s/deployment-green.yaml'
+        sh 'kubectl apply -f k8s/service-green.yaml'
+      }
+    }
+  }
+}
