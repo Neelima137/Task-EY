@@ -52,7 +52,36 @@ pipeline {
       }
     }
 
-    stage('Switch Traffic to Green') {
+
+stage('Approval satge: Switch or Abort') {
+      steps {
+        script {
+          def userInput = input(
+            id: 'ProceedOrAbort', message: 'Do you want to switch traffic to GREEN?',
+            parameters: [choice(name: 'ACTION', choices: 'Approve\nAbort', description: 'Select action')]
+          )
+
+          if (userInput == 'Approve') {
+            echo " Approved - Switching traffic to GREEN..."
+            sh '''
+              kubectl patch service nginx-service -n $NAMESPACE -p '{"spec":{"selector":{"app":"nginx","version":"green"}}}'
+              kubectl delete deployment nginx-deployment-blue -n default --ignore-not-found
+              echo "Switched to GREEN and deleted BLUE deployment."
+            '''
+          } else {
+            echo " Aborted - Keeping BLUE and deleting GREEN deployment..."
+            sh '''
+              kubectl delete deployment nginx-deployment-green -n default --ignore-not-found
+              echo "Reverted to BLUE deployment."
+            '''
+          }
+        }
+      }
+    }
+  }
+}
+
+//    stage('Switch Traffic to Green') {
       steps {
         input message: "Switch traffic to GREEN?"
         sh '''
@@ -70,3 +99,4 @@ pipeline {
     }
   }
 }
+//
