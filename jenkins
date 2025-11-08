@@ -13,26 +13,6 @@ pipeline {
         git branch: 'main', url: 'https://github.com/Neelima137/Task-EY.git'
       }
     }
-  stage('Setup GKE Tools') {
-    steps {
-        sh '''
-         # Install kubectl 
-            echo "Installing kubectl ..."
-            sudo apt-get install kubectl
-            kubectl version --client
-
-            # Install gke-gcloud-auth-plugin 
-            echo "Installing static GKE gcloud auth plugin..."
-            apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
-            gke-gcloud-auth-plugin --version
-
-            echo "Installation complete"
-            kubectl version --client
-            gke-gcloud-auth-plugin --version || echo "Plugin installed via gcloud components"
-        '''
-    }
-}
-
 
     stage('Authenticate to GKE') {
       steps {
