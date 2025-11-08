@@ -30,19 +30,19 @@ pipeline {
     stage('Deploy Blue (Current Version)') {
       steps {
         sh 'echo "Deploying BLUE version..."'
-        sh 'kubectl delete deployment nginx-deployment --ignore-not-found'
-        sh 'kubectl apply -f deployment-nginx-1.28.0.yaml'
-        sh 'kubectl apply -f common-service.yaml'
+        sh 'kubectl delete deployment nginx-deployment -n default  --ignore-not-found'
+        sh 'kubectl apply -f deployment-nginx-1.28.0.yaml -n default '
+        sh 'kubectl apply -f common-service.yaml -n default '
       }
     }
 
     stage('Deploy Green (New Version)') {
       steps {
         sh 'echo "Deploying GREEN version..."'
-        sh 'kubectl delete deployment nginx-deployment --ignore-not-found'
-        sh 'kubectl apply -f deployment-nginix-1.29.3.yaml'
+        sh 'kubectl delete deployment nginx-deployment -n default --ignore-not-found'
+        sh 'kubectl apply -f deployment-nginix-1.29.3.yaml -n default '
         sh 'echo "Testing GREEN deployment..."'
-        sh 'kubectl get pods -l version=green'
+        sh 'kubectl get pods -l version=green -n default '
       }
     }
 
@@ -51,7 +51,7 @@ pipeline {
         input message: "Switch traffic to GREEN?"
         sh '''
           echo "Switching Service selector to GREEN..."
-          kubectl patch service nginx-service -p '{"spec":{"selector":{"app":"nginx","version":"green"}}}'
+          kubectl patch service nginx-service -n default -p '{"spec":{"selector":{"app":"nginx","version":"green"}}}'
         '''  
       }
     }
@@ -59,7 +59,7 @@ pipeline {
     stage('Clean Up Old Blue Pods') {
       steps {
         sh 'echo "Deleting old BLUE deployment..."'
-        sh 'kubectl delete deployment nginx-deployment --ignore-not-found'
+        sh 'kubectl delete deployment nginx-deploymen -n default t --ignore-not-found'
       }
     }
   }
