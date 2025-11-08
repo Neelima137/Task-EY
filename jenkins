@@ -11,7 +11,7 @@ pipeline {
   stages {
     stage('Clone Repository') {
       steps {
-        git 'https://github.com/Neelima137/Task-EY.git'
+        git branch: 'main', url: 'https://github.com/Neelima137/Task-EY.git'
       }
     }
 
