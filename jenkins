@@ -64,7 +64,7 @@ stage('Approval satge: Switch or Abort') {
           if (userInput == 'Approve') {
             echo " Approved - Switching traffic to GREEN..."
             sh '''
-              kubectl patch service nginx-service -n $NAMESPACE -p '{"spec":{"selector":{"app":"nginx","version":"green"}}}'
+              kubectl patch service nginx-service -n default -p '{"spec":{"selector":{"app":"nginx","version":"green"}}}'
               kubectl delete deployment nginx-deployment-blue -n default --ignore-not-found
               echo "Switched to GREEN and deleted BLUE deployment."
             '''
