@@ -18,6 +18,7 @@ pipeline {
       steps {
         withCredentials([file(credentialsId: 'gcp-service-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
         sh '''
+          gcloud components install gke-gcloud-auth-plugin --quiet || true
           echo "Authenticating to GCP..."
           gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
           gcloud config set project $PROJECT_ID
