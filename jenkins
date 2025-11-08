@@ -26,11 +26,18 @@ pipeline {
       }
     }
 }
+  stage('cleanup') {
+      steps {
+        sh 'echo "deleting the deployments..."'
+        sh 'kubectl delete deployment nginx-deployment-blue -n default  --ignore-not-found'
+        sh 'kubectl delete deployment nginx-deployment-green -n default  --ignore-not-found'
+        
+      }
+    }
 
     stage('Deploy Blue (Current Version)') {
       steps {
         sh 'echo "Deploying BLUE version..."'
-        sh 'kubectl delete deployment nginx-deployment -n default  --ignore-not-found'
         sh 'kubectl apply -f deployment-nginx-1.28.0.yaml -n default '
         sh 'kubectl apply -f common-service.yaml -n default '
       }
@@ -39,7 +46,6 @@ pipeline {
     stage('Deploy Green (New Version)') {
       steps {
         sh 'echo "Deploying GREEN version..."'
-        sh 'kubectl delete deployment nginx-deployment -n default --ignore-not-found'
         sh 'kubectl apply -f deployment-nginix-1.29.3.yaml -n default '
         sh 'echo "Testing GREEN deployment..."'
         sh 'kubectl get pods -l version=green -n default '
@@ -59,7 +65,7 @@ pipeline {
     stage('Clean Up Old Blue Pods') {
       steps {
         sh 'echo "Deleting old BLUE deployment..."'
-        sh 'kubectl delete deployment nginx-deploymen -n default t --ignore-not-found'
+        sh 'kubectl delete deployment nginx-deployment-blue -n default t --ignore-not-found'
       }
     }
   }
