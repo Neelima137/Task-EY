@@ -24,8 +24,10 @@ pipeline {
             mv kubectl /usr/local/bin/ 2>/dev/null || export PATH=$PATH:$(pwd)
 
             # Install gke-gcloud-auth-plugin via gcloud (guaranteed compatible)
-            echo "Installing GKE auth plugin via gcloud..."
-            gcloud components install gke-gcloud-auth-plugin -q || true
+            echo "Installing static GKE gcloud auth plugin..."
+            curl -sLo gke-gcloud-auth-plugin https://github.com/GoogleCloudPlatform/cloud-sdk-go/releases/download/v0.1.0/gke-gcloud-auth-plugin_linux_x86_64
+            chmod +x gke-gcloud-auth-plugin
+            mv gke-gcloud-auth-plugin /usr/local/bin/ 2>/dev/null || export PATH=$PATH:$(pwd)
 
             echo "Installation complete"
             kubectl version --client
@@ -39,12 +41,6 @@ pipeline {
       steps {
         withCredentials([file(credentialsId: 'gcp-service-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
         sh '''
-          sudo apt-get update -y
-          sudo apt-get install -y kubectl google-cloud-cli-gke-gcloud-auth-plugin
-          kubectl version --client
-          gke-gcloud-auth-plugin --version || echo "Plugin not found!"
-
-
           echo "Authenticating to GCP..."
           gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
           gcloud config set project $PROJECT_ID
