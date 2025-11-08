@@ -79,7 +79,7 @@ stage('Approval satge: Switch or Abort') {
       }
     }
   }
-}
+
 
 //    stage('Switch Traffic to Green') {
       steps {
