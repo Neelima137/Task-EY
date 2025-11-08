@@ -18,7 +18,12 @@ pipeline {
       steps {
         withCredentials([file(credentialsId: 'gcp-service-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
         sh '''
-          gcloud components install gke-gcloud-auth-plugin --quiet || true
+          sudo apt-get update -y
+          sudo apt-get install -y kubectl google-cloud-cli-gke-gcloud-auth-plugin
+          kubectl version --client
+          gke-gcloud-auth-plugin --version || echo "Plugin not found!"
+
+
           echo "Authenticating to GCP..."
           gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
           gcloud config set project $PROJECT_ID
