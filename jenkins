@@ -30,15 +30,15 @@ pipeline {
     stage('Deploy Blue (Current Version)') {
       steps {
         sh 'echo "Deploying BLUE version..."'
-        sh 'kubectl apply -f k8s/deployment-nginx-1.28.0.yaml'
-        sh 'kubectl apply -f k8s/common-service.yaml'
+        sh 'kubectl apply -f deployment-nginx-1.28.0.yaml'
+        sh 'kubectl apply -f common-service.yaml'
       }
     }
 
     stage('Deploy Green (New Version)') {
       steps {
         sh 'echo "Deploying GREEN version..."'
-        sh 'kubectl apply -f k8s/deployment-nginx-1.29.3.yaml'
+        sh 'kubectl apply -f deployment-nginx-1.29.3.yaml'
         sh 'echo "Testing GREEN deployment..."'
         sh 'kubectl get pods -l version=green'
       }
@@ -57,7 +57,7 @@ pipeline {
     stage('Clean Up Old Blue Pods') {
       steps {
         sh 'echo "Deleting old BLUE deployment..."'
-        sh 'kubectl delete deployment nginx-blue || true'
+        sh 'kubectl delete deployment nginx-deployment || true'
       }
     }
   }
