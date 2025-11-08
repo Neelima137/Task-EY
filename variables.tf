@@ -2,7 +2,7 @@ variable "project_id" {
     type = string
     default = "cts07-devadin" 
 }
-variable "region" {
+variable "zone" {
     type = string   
     default = "us-central1-a"
 }
