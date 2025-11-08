@@ -2,7 +2,6 @@ pipeline {
   agent any
 
   environment {
-    GOOGLE_APPLICATION_CREDENTIALS = credentials('gcp-serviceaccount-key')
     PROJECT_ID = 'project-id'
     CLUSTER_NAME = 'ey-test-cluster'
     CLUSTER_ZONE = 'us-central1-a' 
